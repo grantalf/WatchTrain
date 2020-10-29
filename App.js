@@ -1,12 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, {Component} from 'react';
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import moment from 'moment';
-
-const DATA = {
-  timer: 1234567,
-  laps: [12345, 2345, 2312, 39093]
-}
 
 function Timer({interval, style}) {
   const duration = moment.duration(interval);
@@ -30,19 +25,28 @@ function RoundButton({title, color, background}) {
 
 function Lap({number, interval, fastest, slowest}) {
   const lapStyle = [
-    styles.lap,
+    styles.lapText,
     fastest && styles.fastest,
     slowest && styles.slowest,
   ]
   return (
-    <View style={lapStyle}>
-      <Text style={styles.lapText}>Lap {number}</Text>
-      <Timer style={styles.lapText} interval={interval} />
+    <View style={styles.lap}>
+      <Text style={lapStyle}>Lap {number}</Text>
+      <Timer style={lapStyle} interval={interval} />
     </View>
   )
 }
 
 function LapsTable({laps}) {
+  const finishedLaps = laps.slice(1);
+  let min = Number.MAX_SAFE_INTEGER;
+  let max = Number.MIN_SAFE_INTEGER;
+  if (finishedLaps.length > 2) {
+    finishedLaps.forEach(lap => {
+      if (lap < min) min = lap;
+      if (lap > max) max = lap;
+    });
+  }
   return (
     <ScrollView style={styles.scrollView}>
       {laps.map((lap, index, key) => (
@@ -50,6 +54,8 @@ function LapsTable({laps}) {
           key={laps.length - index}
           number={laps.length - index}
           interval={lap}
+          fastest={lap === min}
+          slowest={lap === max}
         />
       ))}
     </ScrollView>
@@ -62,17 +68,28 @@ function ButtonsRow({children}) {
   )
 }
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Timer interval={DATA.timer}  style={styles.timer}/>
-      <ButtonsRow>
-        <RoundButton title='Reset'color='#FFFFFF' background='#3D3D3D'/>
-        <RoundButton title='Start'color='#50D167' background='#1B361F'/>
-      </ButtonsRow>
-      <LapsTable laps={DATA.laps} />
-    </View>
-  );
+export default class App extends Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      timer: 1234567,
+      laps: [12345, 2345, 2312, 39093]
+    }
+  }
+
+  render() {
+    const {timer, laps} = this.state;
+    return (
+      <View style={styles.container}>
+        <Timer interval={timer}  style={styles.timer}/>
+        <ButtonsRow>
+          <RoundButton title='Reset'color='#FFFFFF' background='#3D3D3D'/>
+          <RoundButton title='Start'color='#50D167' background='#1B361F'/>
+        </ButtonsRow>
+        <LapsTable laps={laps} />
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
