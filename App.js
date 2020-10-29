@@ -119,6 +119,14 @@ export default class App extends Component {
     })
   }
 
+  reset = () => {
+    this.setState({
+      laps: [],
+      start: 0,
+      now: 0,
+    })
+  }
+
   render() {
     const {now, start, laps} = this.state;
     const timer = now - start;
