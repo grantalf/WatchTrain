@@ -10,10 +10,19 @@ const DATA = {
 
 function Timer({interval}) {
   const duration = moment.duration(interval);
+  const centiseconds = Math.floor(duration.milliseconds() / 10);
   return (
     <Text style={styles.timer}>
-      {duration.minutes()}:{duration.seconds()}.{duration.milliseconds()}
+      {duration.minutes()}:{duration.seconds()}.{centiseconds}
     </Text>
+  )
+}
+
+function RoundButton({title, color, background}) {
+  return (
+    <View style={[styles.button, {backgroundColor: background}]}>
+      <Text style={[styles.buttonTitle, {color}]}>{title}</Text>
+    </View>
   )
 }
 
@@ -21,6 +30,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Timer interval={DATA.timer} />
+      <RoundButton title='Start'color='#50D167' background='#1B361F'/>
     </View>
   );
 }
@@ -36,5 +46,15 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 76,
     fontWeight: '200'
+  },
+  button: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonTitle: {
+    fontSize: 19
   }
 });
