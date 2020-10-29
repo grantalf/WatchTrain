@@ -86,6 +86,10 @@ export default class App extends Component {
     }
   }
 
+  componentDidMount() {
+    clearInterval(this.timer);
+  }
+
   start = () => {
     const now = new Date().getTime();
     this.setState({
@@ -94,7 +98,7 @@ export default class App extends Component {
       laps: [0],
     })
     this.timer = setInterval(() => {
-      this.setState({now: new Date().getTime()})}, 100);
+      this.setState({now: new Date().getTime()})}, 60);
   }
 
   lap = () => {
@@ -127,6 +131,17 @@ export default class App extends Component {
     })
   }
 
+  resume = () => {
+    const now = new Date().getTime();
+    this.setState({
+      start: now,
+      now: now,
+    })
+    this.timer = setInterval(() => {
+      this.setState({now: new Date().getTime()})
+    }, 100);
+  }
+
   render() {
     const {now, start, laps} = this.state;
     const timer = now - start;
@@ -138,7 +153,12 @@ export default class App extends Component {
         />
         {laps.length === 0 && (
           <ButtonsRow>
-          <RoundButton title='Reset'color='#FFFFFF' background='#3D3D3D'/>
+          <RoundButton
+            title='Lap'
+            color='#8B8B90'
+            background='#151515'
+            disabled
+          />
           <RoundButton
             title='Start'
             color='#50D167'
@@ -213,7 +233,7 @@ const styles = StyleSheet.create({
     width: 75,
     height: 75,
     borderRadius: 38,
-    borderWidth: 2,
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
