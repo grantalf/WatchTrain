@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView,TouchableOpacity } from 'react-native';
 import moment from 'moment';
 
 function Timer({interval, style}) {
@@ -13,13 +13,17 @@ function Timer({interval, style}) {
   )
 }
 
-function RoundButton({title, color, background}) {
+function RoundButton({title, color, background, onPress, disabled}) {
   return (
-    <View style={[styles.button, {backgroundColor: background}]}>
+    <TouchableOpacity
+      onPress={() => !disabled && onPress()}
+      style={[styles.button, {backgroundColor: background}]}
+      activeOpacity={disabled ? 1.0 : 0.5}
+    >
       <View style={styles.buttonBorder}>
       <Text style={[styles.buttonTitle, {color}]}>{title}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   )
 }
 
@@ -73,18 +77,37 @@ export default class App extends Component {
     super(props)
     this.state = {
       timer: 1234567,
-      laps: [12345, 2345, 2312, 39093]
+      start: 0,
+      now: 0,
+      laps: []
     }
   }
 
+  start = () => {
+    const now = new Date().getTime();
+    this.setState({
+      start: now,
+      now,
+      laps: [0],
+    })
+    this.timer = setInterval(() => {
+      this.setState({now: new Date().getTime()})}, 100);
+  }
+
   render() {
-    const {timer, laps} = this.state;
+    const {now, start, laps} = this.state;
+    const timer = now - start;
     return (
       <View style={styles.container}>
         <Timer interval={timer}  style={styles.timer}/>
         <ButtonsRow>
           <RoundButton title='Reset'color='#FFFFFF' background='#3D3D3D'/>
-          <RoundButton title='Start'color='#50D167' background='#1B361F'/>
+          <RoundButton
+            title='Start'
+            color='#50D167'
+            background='#1B361F'
+            onPress={this.start}
+          />
         </ButtonsRow>
         <LapsTable laps={laps} />
       </View>
