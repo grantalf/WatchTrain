@@ -4,12 +4,15 @@ import { StyleSheet, Text, View, ScrollView,TouchableOpacity } from 'react-nativ
 import moment from 'moment';
 
 function Timer({interval, style}) {
+  const pad  = (n) => n < 10 ? '0' + n : n;
   const duration = moment.duration(interval);
   const centiseconds = Math.floor(duration.milliseconds() / 10);
   return (
-    <Text style={style}>
-      {duration.minutes()}:{duration.seconds()}.{centiseconds}
-    </Text>
+    <View style={styles.timerContainer}>
+        <Text style={style}>{pad(duration.minutes())}:</Text>
+        <Text style={style}>{pad(duration.seconds())}.</Text>
+        <Text style={style}>{pad(centiseconds)}</Text>
+    </View>
   )
 }
 
@@ -41,7 +44,7 @@ function Lap({number, interval, fastest, slowest}) {
   )
 }
 
-function LapsTable({laps}) {
+function LapsTable({laps, timer}) {
   const finishedLaps = laps.slice(1);
   let min = Number.MAX_SAFE_INTEGER;
   let max = Number.MIN_SAFE_INTEGER;
@@ -57,7 +60,7 @@ function LapsTable({laps}) {
         <Lap
           key={laps.length - index}
           number={laps.length - index}
-          interval={lap}
+          interval={index === 0 ? timer + lap : lap}
           fastest={lap === min}
           slowest={lap === max}
         />
@@ -109,7 +112,7 @@ export default class App extends Component {
             onPress={this.start}
           />
         </ButtonsRow>
-        <LapsTable laps={laps} />
+        <LapsTable laps={laps} timer={timer} />
       </View>
     );
   }
@@ -126,7 +129,8 @@ const styles = StyleSheet.create({
   timer: {
     color: '#FFFFFF',
     fontSize: 76,
-    fontWeight: '200'
+    fontWeight: '200',
+    width: 110,
   },
   button: {
     width: 80,
@@ -155,7 +159,8 @@ const styles = StyleSheet.create({
   },
   lapText: {
     color: '#FFFFFF',
-    fontSize: 19,
+    fontSize: 18,
+    width: 30,
   },
   lap: {
     flexDirection: 'row',
@@ -174,5 +179,8 @@ const styles = StyleSheet.create({
   },
   slowest: {
     color: '#CC3531',
+  },
+  timerContainer: {
+    flexDirection: 'row'
   }
 });
