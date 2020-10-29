@@ -35,11 +35,11 @@ function Lap({number, interval, fastest, slowest}) {
     styles.lapText,
     fastest && styles.fastest,
     slowest && styles.slowest,
-  ]
+  ];
   return (
     <View style={styles.lap}>
       <Text style={lapStyle}>Lap {number}</Text>
-      <Timer style={lapStyle} interval={interval} />
+      <Timer style={[lapStyle, styles.lapTimer]} interval={interval} />
     </View>
   )
 }
@@ -97,13 +97,28 @@ export default class App extends Component {
       this.setState({now: new Date().getTime()})}, 100);
   }
 
+  lap = () => {
+    const timestamp = new Date().getTime();
+    const {laps, now, start} = this.state;
+    const [firstLap, ...other] = laps;
+    this.setState({
+      laps: [0, firstLap + now - start, ...other],
+      start: timestamp,
+      now: timestamp,
+    })
+  }
+
   render() {
     const {now, start, laps} = this.state;
     const timer = now - start;
     return (
       <View style={styles.container}>
-        <Timer interval={timer}  style={styles.timer}/>
-        <ButtonsRow>
+        <Timer
+          interval={laps.reduce((total, curr) => total + curr, 0) + timer}
+          style={styles.timer}
+        />
+        {laps.length === 0 && (
+          <ButtonsRow>
           <RoundButton title='Reset'color='#FFFFFF' background='#3D3D3D'/>
           <RoundButton
             title='Start'
@@ -112,6 +127,23 @@ export default class App extends Component {
             onPress={this.start}
           />
         </ButtonsRow>
+        )}
+        {laps.length !== 0 && (
+        <ButtonsRow>
+          <RoundButton
+            title='Lap'
+            color='#FFFFFF'
+            background='#3D3D3D'
+            onPress={this.lap}
+          />
+          <RoundButton
+            title='Stop'
+            color='#E33935'
+            background='#3C1715'
+            onPress={this.stop}
+          />
+        </ButtonsRow>
+        )}
         <LapsTable laps={laps} timer={timer} />
       </View>
     );
@@ -160,6 +192,9 @@ const styles = StyleSheet.create({
   lapText: {
     color: '#FFFFFF',
     fontSize: 18,
+  },
+  lapTimer: {
+    color: '#FFFFFF',
     width: 30,
   },
   lap: {
@@ -181,6 +216,6 @@ const styles = StyleSheet.create({
     color: '#CC3531',
   },
   timerContainer: {
-    flexDirection: 'row'
+    flexDirection: 'row',
   }
 });
