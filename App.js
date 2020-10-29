@@ -108,6 +108,17 @@ export default class App extends Component {
     })
   }
 
+  stop = () => {
+    clearInterval(this.timer);
+    const {laps, now, start} = this.state;
+    const [firstLap, ...other] = laps;
+    this.setState({
+      laps: [firstLap + now - start, ...other],
+      start: 0,
+      now: 0,
+    })
+  }
+
   render() {
     const {now, start, laps} = this.state;
     const timer = now - start;
@@ -128,7 +139,7 @@ export default class App extends Component {
           />
         </ButtonsRow>
         )}
-        {laps.length !== 0 && (
+        {start > 0 && (
         <ButtonsRow>
           <RoundButton
             title='Lap'
@@ -141,6 +152,22 @@ export default class App extends Component {
             color='#E33935'
             background='#3C1715'
             onPress={this.stop}
+          />
+        </ButtonsRow>
+        )}
+        {laps.length > 0 && start === 0 && (
+        <ButtonsRow>
+          <RoundButton
+            title='Reset'
+            color='#FFFFFF'
+            background='#3D3D3D'
+            onPress={this.reset}
+          />
+          <RoundButton
+            title='Start'
+            color='#50D167'
+            background='#1B361F'
+            onPress={this.resume}
           />
         </ButtonsRow>
         )}
