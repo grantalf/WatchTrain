@@ -8,11 +8,11 @@ const DATA = {
   laps: [12345, 2345, 2312, 39093]
 }
 
-function Timer({interval}) {
+function Timer({interval, style}) {
   const duration = moment.duration(interval);
   const centiseconds = Math.floor(duration.milliseconds() / 10);
   return (
-    <Text style={styles.timer}>
+    <Text style={style}>
       {duration.minutes()}:{duration.seconds()}.{centiseconds}
     </Text>
   )
@@ -28,11 +28,16 @@ function RoundButton({title, color, background}) {
   )
 }
 
-function Lap({number, interval}) {
+function Lap({number, interval, fastest, slowest}) {
+  const lapStyle = [
+    styles.lap,
+    fastest && styles.fastest,
+    slowest && styles.slowest,
+  ]
   return (
-    <View style={styles.lap}>
+    <View style={lapStyle}>
       <Text style={styles.lapText}>Lap {number}</Text>
-      <Text style={styles.lapText}>{interval}</Text>
+      <Timer style={styles.lapText} interval={interval} />
     </View>
   )
 }
@@ -60,7 +65,7 @@ function ButtonsRow({children}) {
 export default function App() {
   return (
     <View style={styles.container}>
-      <Timer interval={DATA.timer} />
+      <Timer interval={DATA.timer}  style={styles.timer}/>
       <ButtonsRow>
         <RoundButton title='Reset'color='#FFFFFF' background='#3D3D3D'/>
         <RoundButton title='Start'color='#50D167' background='#1B361F'/>
@@ -106,6 +111,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     justifyContent: 'space-between',
     marginTop: 80,
+    marginBottom: 30,
   },
   lapText: {
     color: '#FFFFFF',
@@ -114,10 +120,19 @@ const styles = StyleSheet.create({
   lap: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    borderColor: '#151515',
+    borderTopWidth: 1,
+    paddingVertical: 7,
   },
   scrollView: {
     alignSelf: 'stretch',
     paddingTop: 20,
     paddingHorizontal: 15,
+  },
+  fastest: {
+    color: '#4BC05F',
+  },
+  slowest: {
+    color: '#CC3531',
   }
 });
